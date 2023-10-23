@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ws_operation">
+    <sys_ws_operation action="DELETE">
+        <active>true</active>
+        <consumes>application/json</consumes>
+        <consumes_customized>false</consumes_customized>
+        <default_operation_uri/>
+        <enforce_acl>cf9d01d3e73003009d6247e603f6a990</enforce_acl>
+        <http_method>GET</http_method>
+        <name>ni_getinfo (v2)</name>
+        <operation_script><![CDATA[(function process( /*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
+
+
+    // implement resource here
+
+
+    // Get value from the user_name path parameter passed in the URL
+    //var requestUser = request.pathParams.user_name;
+    //testa assignment group istället
+    var requestAssignmentGroup = request.pathParams.assignment_group;
+    // Get value of the ni_query query parameter passed in the URL
+    var requestNIQuery = request.queryParams.ni_query;
+
+    // Query the sys_user table to get the user record for the user passed in
+    // the user_id path parameter.  
+    //var requestUserName = new GlideRecord('sys_user');
+    //requestUserName.get('user_name', requestUser);
+
+    var requestAssignmentGroupName = new GlideRecord('sys_user_group');
+	requestAssignmentGroupName.get('assignment_group', requestAssignmentGroup);
+
+    // If there is no user record for the user_name passed in the user_name path parameter,
+    // return a custom error.  Notice the error object is created from
+    // sn_ws_err.ServiceError();  If no status value is set, the HTTP Status will
+    // be 500.
+  
+
+    // Get the count of active NeedIt table records where the user from the
+    // user_name path parameter is the Requested for.  The encoded query is from the
+    // Query Parameter Associations.  Group by category.
+    var userNICount = new GlideAggregate('x_58872_needit_needit');
+    userNICount.addAggregate('COUNT');
+    userNICount.addQuery('u_requested_for', requestAssignmentGroupName.sys_id);
+    userNICount.addEncodedQuery(requestNIQuery);
+    userNICount.groupBy('u_request_type');
+    userNICount.query();
+
+
+    var needitRecs = 0;
+    var niUserRecs = [];
+    var needitRecsCount = 0;
+
+    while (userNICount.next()) {
+        needitRecs = userNICount.getAggregate('COUNT');
+        var reqType = userNICount.u_request_type.getDisplayValue();
+        niUserRecs.push({
+            "requestType": reqType,
+            "count": needitRecs
+        });
+        needitRecsCount = parseInt(needitRecsCount) + parseInt(needitRecs);
+    }
+
+    //Create a body object.  Add property value pairs to the body.
+    var body = {};
+    body.totalUserNIRecs = needitRecsCount;
+    body.catCounts = niUserRecs;
+    body.user = {
+        "User name": requestUserName.user_name,
+        "User ID": requestUserName.sys_id
+    };
+
+    // Send the response object, which is returned to the requestor, to the body object.
+    response.setBody(body);
+
+
+})(request, response);]]></operation_script>
+        <operation_uri>/api/x_58872_needit/v2/needit_api/nigetinfo/{user_name}</operation_uri>
+        <produces>application/json</produces>
+        <produces_customized>false</produces_customized>
+        <relative_path>/nigetinfo/{user_name}</relative_path>
+        <request_example/>
+        <requires_acl_authorization>true</requires_acl_authorization>
+        <requires_authentication>true</requires_authentication>
+        <requires_snc_internal_role>true</requires_snc_internal_role>
+        <short_description>Find the active NeedIt records for a user. Group by What needed.</short_description>
+        <sys_class_name>sys_ws_operation</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2023-10-23 18:23:09</sys_created_on>
+        <sys_id>7dc93e75974a3110ce1132b6f053aff8</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name>ni_getinfo (v2)</sys_name>
+        <sys_package display_value="NeedIt" source="x_58872_needit">6ead8e780f603200cd674f8ce1050ed1</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="NeedIt">6ead8e780f603200cd674f8ce1050ed1</sys_scope>
+        <sys_update_name>sys_ws_operation_7dc93e75974a3110ce1132b6f053aff8</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2023-10-23 18:42:55</sys_updated_on>
+        <web_service_definition display_value="NeedIt API">441e18b997023110ce1132b6f053af6d</web_service_definition>
+        <web_service_version display_value="v2">39c93e75974a3110ce1132b6f053aff6</web_service_version>
+    </sys_ws_operation>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="NeedIt">6ead8e780f603200cd674f8ce1050ed1</application>
+        <file_path/>
+        <instance_id>21b310bddbe7a1d438f11729139619e4</instance_id>
+        <instance_name>dev177171</instance_name>
+        <name>sys_ws_operation_7dc93e75974a3110ce1132b6f053aff8</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sys_ws_operation"&gt;&lt;sys_ws_operation action="INSERT_OR_UPDATE"&gt;&lt;active&gt;true&lt;/active&gt;&lt;consumes&gt;application/json&lt;/consumes&gt;&lt;consumes_customized&gt;false&lt;/consumes_customized&gt;&lt;default_operation_uri/&gt;&lt;enforce_acl&gt;cf9d01d3e73003009d6247e603f6a990&lt;/enforce_acl&gt;&lt;http_method&gt;GET&lt;/http_method&gt;&lt;name&gt;ni_getinfo (v2)&lt;/name&gt;&lt;operation_script&gt;&lt;![CDATA[(function process( /*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
+
+
+    // implement resource here
+
+
+    // Get value from the user_name path parameter passed in the URL
+    //var requestUser = request.pathParams.user_name;
+    //testa assignment group istället
+    var requestAssignmentGroup = request.pathParams.assignment_group;
+    // Get value of the ni_query query parameter passed in the URL
+    var requestNIQuery = request.queryParams.ni_query;
+
+    // Query the sys_user table to get the user record for the user passed in
+    // the user_id path parameter.  
+    //var requestUserName = new GlideRecord('sys_user');
+    //requestUserName.get('user_name', requestUser);
+
+    var requestAssignmentGroupName = new GlideRecord('sys_user_group');
+	requestAssignmentGroupName.get('assignment_group', requestAssignmentGroup);
+
+    // If there is no user record for the user_name passed in the user_name path parameter,
+    // return a custom error.  Notice the error object is created from
+    // sn_ws_err.ServiceError();  If no status value is set, the HTTP Status will
+    // be 500.
+  
+
+    // Get the count of active NeedIt table records where the user from the
+    // user_name path parameter is the Requested for.  The encoded query is from the
+    // Query Parameter Associations.  Group by category.
+    var userNICount = new GlideAggregate('x_58872_needit_needit');
+    userNICount.addAggregate('COUNT');
+    userNICount.addQuery('u_requested_for', requestAssignmentGroupName.sys_id);
+    userNICount.addEncodedQuery(requestNIQuery);
+    userNICount.groupBy('u_request_type');
+    userNICount.query();
+
+
+    var needitRecs = 0;
+    var niUserRecs = [];
+    var needitRecsCount = 0;
+
+    while (userNICount.next()) {
+        needitRecs = userNICount.getAggregate('COUNT');
+        var reqType = userNICount.u_request_type.getDisplayValue();
+        niUserRecs.push({
+            "requestType": reqType,
+            "count": needitRecs
+        });
+        needitRecsCount = parseInt(needitRecsCount) + parseInt(needitRecs);
+    }
+
+    //Create a body object.  Add property value pairs to the body.
+    var body = {};
+    body.totalUserNIRecs = needitRecsCount;
+    body.catCounts = niUserRecs;
+    body.user = {
+        "User name": requestUserName.user_name,
+        "User ID": requestUserName.sys_id
+    };
+
+    // Send the response object, which is returned to the requestor, to the body object.
+    response.setBody(body);
+
+
+})(request, response);]]&gt;&lt;/operation_script&gt;&lt;operation_uri&gt;/api/x_58872_needit/v2/needit_api/nigetinfo/{user_name}&lt;/operation_uri&gt;&lt;produces&gt;application/json&lt;/produces&gt;&lt;produces_customized&gt;false&lt;/produces_customized&gt;&lt;relative_path&gt;/nigetinfo/{user_name}&lt;/relative_path&gt;&lt;request_example/&gt;&lt;requires_acl_authorization&gt;true&lt;/requires_acl_authorization&gt;&lt;requires_authentication&gt;true&lt;/requires_authentication&gt;&lt;requires_snc_internal_role&gt;true&lt;/requires_snc_internal_role&gt;&lt;short_description&gt;Find the active NeedIt records for a user. Group by What needed.&lt;/short_description&gt;&lt;sys_class_name&gt;sys_ws_operation&lt;/sys_class_name&gt;&lt;sys_created_by&gt;admin&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2023-10-23 18:23:09&lt;/sys_created_on&gt;&lt;sys_id&gt;7dc93e75974a3110ce1132b6f053aff8&lt;/sys_id&gt;&lt;sys_mod_count&gt;2&lt;/sys_mod_count&gt;&lt;sys_name&gt;ni_getinfo (v2)&lt;/sys_name&gt;&lt;sys_package display_value="NeedIt" source="x_58872_needit"&gt;6ead8e780f603200cd674f8ce1050ed1&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_scope display_value="NeedIt"&gt;6ead8e780f603200cd674f8ce1050ed1&lt;/sys_scope&gt;&lt;sys_update_name&gt;sys_ws_operation_7dc93e75974a3110ce1132b6f053aff8&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;admin&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2023-10-23 18:42:55&lt;/sys_updated_on&gt;&lt;web_service_definition display_value="NeedIt API"&gt;441e18b997023110ce1132b6f053af6d&lt;/web_service_definition&gt;&lt;web_service_version display_value="v2"&gt;39c93e75974a3110ce1132b6f053aff6&lt;/web_service_version&gt;&lt;/sys_ws_operation&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>-1743150009</payload_hash>
+        <record_name>ni_getinfo (v2)</record_name>
+        <reverted_from/>
+        <source>8b726ebc97023110ce1132b6f053af99</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2023-10-23 18:42:55</sys_created_on>
+        <sys_id>174efaf5974a3110ce1132b6f053afe2</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>18b5dd8dcc00000001</sys_recorded_at>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2023-10-23 18:42:55</sys_updated_on>
+        <type>Scripted REST Resource</type>
+        <update_guid>1f4efaf5b44a3110d4fa1398c027f1e1</update_guid>
+        <update_guid_history>1f4efaf5b44a3110d4fa1398c027f1e1:-1743150009,935b32b5364a3110041345d2c8c1542a:915648744,f1c93e75d74a311085ad52d479707dfa:-1920443494</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2023-10-23 18:44:53</sys_created_on>
+        <sys_db_object display_value="" name="sys_ws_operation">sys_ws_operation</sys_db_object>
+        <sys_id>0a10e92819594ce4a4c58fd6bca3cdc1</sys_id>
+        <sys_metadata>7dc93e75974a3110ce1132b6f053aff8</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>ni_getinfo (v2)</sys_name>
+        <sys_package display_value="NeedIt" source="x_58872_needit">6ead8e780f603200cd674f8ce1050ed1</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="NeedIt">6ead8e780f603200cd674f8ce1050ed1</sys_scope>
+        <sys_scope_delete display_value="">94872a8897db403e8ee69a431de2fca4</sys_scope_delete>
+        <sys_update_name>sys_ws_operation_7dc93e75974a3110ce1132b6f053aff8</sys_update_name>
+        <sys_update_version display_value="sys_ws_operation_7dc93e75974a3110ce1132b6f053aff8">174efaf5974a3110ce1132b6f053afe2</sys_update_version>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2023-10-23 18:44:53</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>
